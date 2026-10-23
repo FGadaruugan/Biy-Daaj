@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="mn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>Үгийн сүлжээ — Хариултууд</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b1020;--panel:#141c30;--line:#293550;--text:#f3f6ff;--muted:#a9b5ce;--accent:#8b9cff;--accent2:#58e0c1}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(ellipse at top right,#253568 0,transparent 42%),linear-gradient(150deg,#0b1020,#101827 65%,#111e2a);color:var(--text)}
+    .wrap{width:min(920px,100%);margin:auto;padding:28px 18px 48px}
+    header{padding:28px 0 22px}
+    .tag{display:inline-flex;align-items:center;gap:8px;border:1px solid #46527c;background:#202b4b;border-radius:99px;padding:7px 12px;color:#d9e0ff;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{font-size:clamp(30px,6vw,48px);line-height:1.08;letter-spacing:-.04em;margin:18px 0 10px}
+    .sub{color:var(--muted);line-height:1.7;max-width:620px;margin:0}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0 16px}
+    input{flex:1;min-width:190px;background:#0d1425;color:var(--text);border:1px solid var(--line);border-radius:13px;padding:13px 15px;font:inherit;outline:none}
+    input:focus{border-color:var(--accent);box-shadow:0 0 0 3px #8b9cff22}
+    button{cursor:pointer;border:1px solid var(--line);border-radius:13px;padding:12px 15px;background:#202a43;color:var(--text);font:600 14px system-ui;transition:transform .15s,border-color .15s}
+    button:hover{transform:translateY(-1px);border-color:var(--accent)}
+    .count{font-size:13px;color:var(--muted);padding:8px 2px 14px}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .item{display:flex;align-items:center;gap:13px;min-width:0;padding:16px;background:linear-gradient(145deg,#18233a,#121a2c);border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 28px #00000014}
+    .num{display:grid;place-items:center;flex:0 0 38px;height:38px;border-radius:12px;background:#27345b;color:#cbd4ff;font-weight:800;font-size:14px}
+    .answer{font-weight:650;overflow-wrap:anywhere;line-height:1.4}
+    .item small{display:block;color:var(--muted);font-size:11px;margin-top:4px;font-weight:500}
+    .empty{display:none;color:var(--muted);text-align:center;padding:32px;border:1px dashed var(--line);border-radius:16px}
+    footer{border-top:1px solid var(--line);margin-top:30px;padding-top:18px;color:var(--muted);font-size:12px;line-height:1.7}
+    @media(max-width:560px){.wrap{padding:18px 14px 34px}.grid{grid-template-columns:1fr}.item{padding:14px}header{padding-top:18px}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <span class="tag">✦ НИЙГЭМ СУДЛАЛ</span>
+      <h1>Үгийн сүлжээний<br>хариултууд</h1>
+      <p class="sub">“Нийгэм, нийгмийн харилцаа” сэдвийн үгсийг эндээс хараарай. Хайлт ашиглан хүссэн хариултаа хурдан олох боломжтой.</p>
+    </header>
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="🔎  Хариулт хайх..." aria-label="Хариулт хайх">
+      <button id="reset" type="button">Бүгдийг харах</button>
+    </div>
+    <div class="count" id="count" aria-live="polite">Нийт 18 хариулт</div>
+    <section class="grid" id="answers" aria-label="Хариултын жагсаалт"></section>
+    <div class="empty" id="empty">Ийм хариулт олдсонгүй. Өөр үгээр хайгаарай.</div>
+    <footer>Сургалтын зориулалттай хуудас · Хариултуудыг өмнөх жагсаалтаас оруулав.</footer>
+  </main>
+  <script>
+    const answers = [
+      "Нийгэм","Нийгмийн бүтэц","Байр суурь","Үүрэг","Үүргийн зөрчил",
+      "Төрөлхийн байр суурь","Олдмол байр суурь","Нийгэмшилт","Адилсал",
+      "Нийгэмшилтийн агент","Гэр бүл","Сургууль","Үе тэнгийнхэн",
+      "Нийгмийн гажуудал","Аялдах үйлдэл","Гэмт хэрэг","Нийгмийн хяналт","Нийгмийн судалгаа"
+    ];
+    const grid = document.getElementById('answers');
+    const search = document.getElementById('search');
+    const count = document.getElementById('count');
+    const empty = document.getElementById('empty');
+    function render(){
+      const q = search.value.trim().toLocaleLowerCase('mn');
+      const shown = answers.map((answer,index)=>({answer,index})).filter(x=>x.answer.toLocaleLowerCase('mn').includes(q));
+      grid.innerHTML = shown.map(x => '<article class="item"><span class="num">'+String(x.index+1).padStart(2,'0')+'</span><div class="answer">'+x.answer+'<small>Хариулт '+(x.index+1)+'</small></div></article>').join('');
+      count.textContent = q ? 'Олдсон: '+shown.length+' / '+answers.length : 'Нийт '+answers.length+' хариулт';
+      empty.style.display = shown.length ? 'none' : 'block';
+    }
+    search.addEventListener('input',render);
+    document.getElementById('reset').addEventListener('click',()=>{search.value='';render();search.focus()});
+    render();
+  </script>
+</body>
+</html>
